@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="myForm">
+    <input name="aid" id="aid" type="hidden">
+    <table >
+        <tr>
+            <td>账目描述</td>
+            <td><input class="form-control" name="ainfo" id="ainfo"></td>
+        </tr>
+        <tr>
+            <td>账目类型</td>
+            <td><input class="form-control" name="atype" id="atype"></td>
+        </tr>
+        <tr>
+            <td>账目创建时间</td>
+            <td><input class="form-control date" name="acdate" id="acdate"></td>
+        </tr>
+        <tr>
+            <td>账目金额</td>
+            <td><input class="form-control" name="amoney" id="amoney"></td>
+        </tr>
+        <tr>
+            <td>账目图片</td>
+            <td><input class="form-control" name="aimg" id="aimg"></td>
+        </tr>
+    </table>
+</form>
+</body>
+<script>
+    $('.date').datetimepicker({
+        language: 'zh-CN',//显示中文
+        //format: 'yyyy-mm-dd hh:ii:ss',//显示格式
+        //minView: "day",//设置只显示到月份
+        format: 'yyyy-mm-dd',//显示格式
+        minView: "month",//设置只显示到月份
+        initialDate: new Date(),//初始化当前日期
+        autoclose: true,//选中自动关闭
+        todayBtn: true//显示今日按钮
+    });
+</script>
+</html>

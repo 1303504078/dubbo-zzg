@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入bootstrap的css -->
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap.css">
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap-theme.css">
+    <!-- 引入jquery的js -->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <!-- 引入bootstrap的js -->
+    <script type="text/javascript" src="../js/bootstrap/bootstrap3/js/bootstrap.js"></script>
+
+    <!-- 引入boostrap的表格的css、js -->
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap-table/bootstrap-table.css">
+    <script type="text/javascript" src="../js/bootstrap/bootstrap-table/bootstrap-table.js"></script>
+    <script type="text/javascript" src="../js/bootstrap/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+    <!-- 引入bootbox弹框的js -->
+    <script type="text/javascript" src="../js/bootstrap/bootstrap-bootbox/bootbox.js"></script>
+
+    <!-- 引入bootstrap的日期的css、js -->
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+    <script type="text/javascript" src="../js/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="../js/bootstrap/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <!-- 引入fileinput 文件上传的 css、js -->
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap-fileinput/css/fileinput.css">
+    <script type="text/javascript" src="../js/bootstrap/bootstrap-fileinput/js/fileinput.js"></script>
+    <script type="text/javascript" src="../js/bootstrap/bootstrap-fileinput/js/locales/zh.js"></script>
+</head>
+<body>
+<div id="toolbar">
+    <form class="form-inline">
+        <div  class="form-group">
+            <label >名称</label>
+            <input class="form-control" id="name">
+            时间：   <input class="form-control date" id="sdate">---
+            <input class="form-control date" id="edate">
+
+            入账<input  type="radio"  name="r" value="1">出账<input  type="radio" value="2" name="r">
+
+        </div>
+        <button onclick="search()" class="btn btn-primary glyphicon glyphicon-search" type="button">搜索</button>
+        <button onclick="openAdd()" class="btn btn-primary glyphicon glyphicon-plus" type="button">新增用户</button>
+    </form>
+</div>
+<table class="table" id="myTable"></table>
+</body>
+<script >
+    $(function(){
+        initUserTable();//初始化用户列表
+    })
+    function initUserTable() {
+        $("#myTable").bootstrapTable({
+            url: "/zzg/query",
+            columns: [
+                {field: "ch", checkbox: "true"},
+                {field: "aid", title: "id"},
+                {field: "ainfo", title: "账目描述"},
+                {field: "acdate", title: "账目创建时间"},
+                {field: "amoney", title: "账目金额"},
+                {field: "aimg", title: "账目图片"},
+                {field: "ayn", title: "状态",formatter:function(value,row){
+                        if(value==1){
+                            return "正常";
+                        }else{
+                            return "删除";
+                        }
+                    }},
+                {
+                    field: "cz", title: "操作", formatter: function (value, row) {
+                        var str="";
+                        str+="<button onclick='del("+row.aid+")' class='btn btn-primary' type='button'>删除</button> ";
+                        str+="<button onclick='openUpdate("+row.aid+")' class='btn btn-primary' type='button'>修改</button> ";
+                        return str;
+                    }
+                }
+            ],
+            pagination: true,
+            pageSize: 2,
+            pageList: [2, 4, 6, 8, 10],
+            sidePagination: "client",
+        })
+    }
+    function del(id){
+        var ss=confirm("确定要用户删除姓名为"+id+"的信息吗")
+        if (ss) {
+            $.ajax({
+                url:"/zzg/del",
+                type:"post",
+                data:{id:id},
+                success:function(){
+                    $('#myTable').bootstrapTable('refresh');
+                },
+                error:function(){
+                    $('#myTable').bootstrapTable('refresh');
+                }
+            })
+        }
+
+    }
+    var res;
+    function createAddContent(url){
+        $.ajax({
+            url:url,
+            async:false,//同步
+            success:function(data){
+                res = data;
+            }
+        });
+        return res;
+    }
+
+    //打开弹框
+    function openAdd(){
+        bootbox.dialog({
+            title:'新增用户',
+            message: createAddContent("/page/add"),
+            closeButton: true,
+            buttons : {
+                "success" : {
+                    "label" : "<i class='icon-ok'></i> 保存",
+                    "className" : "btn-sm btn-success",
+                    "callback" : function() {//回调函数
+                        //提交表单
+                        $.ajax({
+                            url:"/zzg/add",
+                            type:'post',
+                            data:$("#myForm").serialize(),//表单序列化
+                            success:function(data){
+                                $('#myTable').bootstrapTable('refresh');
+                            }
+                        });
+                    }
+                },
+                "cancel" : {
+                    "label" : "<i class='icon-info'></i> 取消",
+                    "className" : "btn-sm btn-danger"
+                }
+            }
+        });
+    }
+    //打开修改弹框
+    function openUpdate(id){
+        //先打开弹框
+        bootbox.dialog({
+            title:'修改用户',
+            message: createAddContent("/page/add"),
+            closeButton: true,
+            buttons : {
+                "success" : {
+                    "label" : "<i class='icon-ok'></i> 保存",
+                    "className" : "btn-sm btn-success",
+                    "callback" : function() {//回调函数
+                        //提交表单
+                        $.ajax({
+                            url:"/zzg/add",
+                            type:'post',
+                            data:$("#myForm").serialize(),//表单序列化
+                            success:function(data){
+
+                                $('#myTable').bootstrapTable('refresh');
+                            }
+                        });
+                    }
+                },
+                "cancel" : {
+                    "label" : "<i class='icon-info'></i> 取消",
+                    "className" : "btn-sm btn-danger"
+                }
+            }
+
+        });
+
+        //回显数据：ajax查询回显数据
+        $.ajax({
+            url:"/zzg/queryUserById",
+            type:'get',
+            data:{id:id},//用户id
+            async:false,//同步
+            success:function(data){
+                //回显数据
+                $("#aid").val(data.aid);
+                $("#ainfo").val(data.ainfo);
+                $("#atype").val(data.atype);
+                $("#acdate").val(data.acdate);
+                $("#amoney").val(data.amoney);
+                $("#aimg").val(data.aimg);
+            }
+        });
+
+    }
+</script>
+</html>

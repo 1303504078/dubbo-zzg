@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- 引入bootstrap的css -->
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap.css">
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap-theme.css">
+    <!-- 引入jquery的js -->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <!-- 引入bootstrap的js -->
+    <script type="text/javascript" src="../js/bootstrap/bootstrap3/js/bootstrap.js"></script>
+    <!-- 引入树的相关的css、js -->
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap-treeview/bootstrap-treeview.min.css">
+    <script type="text/javascript" src="../js/bootstrap/bootstrap-treeview/bootstrap-treeview.min.js"></script>
+
+    <!-- 引入选项卡的相关的css、js -->
+    <link rel="stylesheet" href="../js/bootstrap/bootStrap-addTabs/bootstrap.addtabs.css">
+    <script type="text/javascript" src="../js/bootstrap/bootStrap-addTabs/bootstrap.addtabs.min.js"></script>
+    <style type="text/css">
+        body { padding-top: 70px; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">金科教育</a>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">登录</a></li>
+            <li><a href="#">注销</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <!-- 树 -->
+            <div id="myTree"></div>
+        </div>
+        <div class="col-md-10">
+            <!-- 选项卡 -->
+            <div id="myTabs">
+                <!-- 新选项卡 -->
+                <ul class="nav nav-tabs" id="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#home" role="tab" data-toggle="tab">欢迎</a>
+                    </li>
+                </ul>
+
+                <!-- 选项卡下内容 -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="home">
+                        123
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $(function(){
+        initTree();//初始化树
+    })
+    //初始化树
+    function initTree(){
+        $.ajax({
+            url:"/zzg/querytree",
+            type:"get",
+            success:function(data){
+                $('#myTree').treeview({
+                    data:data,
+                    onNodeSelected:function(event, node) {
+                        //TODO 操作选项卡
+                        $.addtabs({iframeHeight: 550});
+                        $.addtabs.add({
+                            id:node.id,
+                            title:node.text,
+                            url: node.href
+                        });
+                    }
+                })
+            }
+        })
+    }
+
+
+</script>
+</html>
